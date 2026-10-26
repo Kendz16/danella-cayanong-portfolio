@@ -1,9 +1,9 @@
 import React from 'react';
 import { ArrowRight, CheckCircle2, FileSpreadsheet, Compass, Scale, Shield } from 'lucide-react';
-import { HOW_I_CAN_HELP_CARDS } from '../data/danellaData';
+import { ExploringTopic, HOW_I_CAN_HELP_CARDS } from '../data/danellaData';
 
 interface HowICanHelpSectionProps {
-  onSelectTopic: (topic: string) => void;
+  onSelectTopic: (topic: ExploringTopic) => void;
 }
 
 export const HowICanHelpSection: React.FC<HowICanHelpSectionProps> = ({ onSelectTopic }) => {
@@ -20,7 +20,7 @@ export const HowICanHelpSection: React.FC<HowICanHelpSectionProps> = ({ onSelect
     }
   };
 
-  const mapCardToFormTopic = (id: string) => {
+  const mapCardToFormTopic = (id: string): ExploringTopic => {
     switch (id) {
       case 'spreadsheets':
         return 'Merit Planning / Comp Review';

@@ -1,18 +1,12 @@
 import React from 'react';
-import { Mail, Database } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { DANELLA_PROFILE } from '../data/danellaData';
 
 interface NavbarProps {
   onInquiryClick: () => void;
-  onOpenAdmin: () => void;
-  isAdminActive: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({
-  onInquiryClick,
-  onOpenAdmin,
-  isAdminActive,
-}) => {
+export const Navbar: React.FC<NavbarProps> = ({ onInquiryClick }) => {
   return (
     <header className="sticky top-0 z-40 bg-[#071324]/90 backdrop-blur-md border-b border-slate-800/80 transition-all">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between gap-4">
@@ -56,19 +50,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>Send Inquiry</span>
           </button>
 
-          {/* Admin toggle icon */}
-          <button
-            onClick={onOpenAdmin}
-            className={`p-2 rounded-xl transition-colors cursor-pointer border ${
-              isAdminActive
-                ? 'bg-blue-500/20 border-blue-400 text-blue-300'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/80 border-slate-800'
-            }`}
-            title={isAdminActive ? 'Return to Portfolio' : 'Admin Leads Dashboard'}
-            aria-label="Admin Dashboard"
-          >
-            <Database className="w-4 h-4" />
-          </button>
         </div>
       </div>
     </header>

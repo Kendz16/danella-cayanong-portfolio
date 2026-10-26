@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
 import { Send, CheckCircle2, AlertCircle, ShieldCheck, Mail } from 'lucide-react';
-import { LeadSubmission } from '../data/danellaData';
+import { CompanySize, ExploringTopic } from '../data/danellaData';
 
 interface InquiryFormSectionProps {
-  onLeadSubmitted: (lead: LeadSubmission) => void;
-  selectedTopic?: string;
+  selectedTopic?: ExploringTopic;
+}
+
+interface SubmittedInquiry {
+  createdAt: string;
+  fullName: string;
+  workEmail: string;
+  companyName: string;
+  exploringTopic: ExploringTopic;
 }
 
 const FREE_EMAIL_PROVIDERS = [
@@ -25,16 +32,13 @@ const FREE_EMAIL_PROVIDERS = [
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xqppplvz';
 
 export const InquiryFormSection: React.FC<InquiryFormSectionProps> = ({
-  onLeadSubmitted,
   selectedTopic = 'Just Exploring',
 }) => {
   const [fullName, setFullName] = useState('');
   const [workEmail, setWorkEmail] = useState('');
   const [companyName, setCompanyName] = useState('');
-  const [companySize, setCompanySize] = useState<'1-100' | '101-500' | '501-1000' | '1000+'>('101-500');
-  const [exploringTopic, setExploringTopic] = useState<LeadSubmission['exploringTopic']>(
-    (selectedTopic as LeadSubmission['exploringTopic']) || 'Just Exploring'
-  );
+  const [companySize, setCompanySize] = useState<CompanySize>('101-500');
+  const [exploringTopic, setExploringTopic] = useState<ExploringTopic>(selectedTopic);
   const [message, setMessage] = useState('');
   const [agreedToContact, setAgreedToContact] = useState(true);
 
@@ -46,12 +50,12 @@ export const InquiryFormSection: React.FC<InquiryFormSectionProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [lastSubmittedLead, setLastSubmittedLead] = useState<LeadSubmission | null>(null);
+  const [lastSubmittedInquiry, setLastSubmittedInquiry] = useState<SubmittedInquiry | null>(null);
 
   // Update selected topic if prop changes
   React.useEffect(() => {
     if (selectedTopic) {
-      setExploringTopic(selectedTopic as LeadSubmission['exploringTopic']);
+      setExploringTopic(selectedTopic);
     }
   }, [selectedTopic]);
 
@@ -97,17 +101,12 @@ export const InquiryFormSection: React.FC<InquiryFormSectionProps> = ({
       return;
     }
 
-    const newLead: LeadSubmission = {
-      id: `lead-${Date.now()}`,
+    const inquiry: SubmittedInquiry = {
       createdAt: new Date().toISOString(),
       fullName: fullName.trim(),
       workEmail: workEmail.trim(),
       companyName: companyName.trim(),
-      companySize,
       exploringTopic,
-      message: message.trim() || undefined,
-      agreedToContact,
-      status: 'New',
     };
 
     setIsSubmitting(true);
@@ -119,14 +118,14 @@ export const InquiryFormSection: React.FC<InquiryFormSectionProps> = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: newLead.fullName,
-          email: newLead.workEmail,
-          company: newLead.companyName,
-          company_size: newLead.companySize,
-          topic: newLead.exploringTopic,
-          message: newLead.message || '',
-          consent_to_contact: newLead.agreedToContact ? 'Yes' : 'No',
-          _subject: `New Salary.com inquiry: ${newLead.companyName}`,
+          name: inquiry.fullName,
+          email: inquiry.workEmail,
+          company: inquiry.companyName,
+          company_size: companySize,
+          topic: inquiry.exploringTopic,
+          message: message.trim(),
+          consent_to_contact: agreedToContact ? 'Yes' : 'No',
+          _subject: `New Salary.com inquiry: ${inquiry.companyName}`,
         }),
       });
 
@@ -134,8 +133,7 @@ export const InquiryFormSection: React.FC<InquiryFormSectionProps> = ({
         throw new Error(`Formspree returned ${response.status}`);
       }
 
-      onLeadSubmitted(newLead);
-      setLastSubmittedLead(newLead);
+      setLastSubmittedInquiry(inquiry);
       setIsSubmitted(true);
     } catch (error) {
       console.error('Failed to submit inquiry to Formspree', error);
@@ -184,30 +182,30 @@ export const InquiryFormSection: React.FC<InquiryFormSectionProps> = ({
               </div>
 
               {/* Lead Summary confirmation box */}
-              {lastSubmittedLead && (
+              {lastSubmittedInquiry && (
                 <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 text-left text-xs space-y-2 max-w-md mx-auto">
                   <div className="font-semibold text-blue-400 flex items-center justify-between">
                     <span>Summary of Submitted Details:</span>
                     <span className="text-[11px] text-slate-400 font-mono">
-                      {new Date(lastSubmittedLead.createdAt).toLocaleDateString()}
+                      {new Date(lastSubmittedInquiry.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-slate-300">
                     <div>
                       <span className="text-slate-400 block text-[11px]">Name:</span>
-                      <span className="font-medium text-white">{lastSubmittedLead.fullName}</span>
+                      <span className="font-medium text-white">{lastSubmittedInquiry.fullName}</span>
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[11px]">Company:</span>
-                      <span className="font-medium text-white">{lastSubmittedLead.companyName}</span>
+                      <span className="font-medium text-white">{lastSubmittedInquiry.companyName}</span>
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[11px]">Work Email:</span>
-                      <span className="font-medium text-white truncate block">{lastSubmittedLead.workEmail}</span>
+                      <span className="font-medium text-white truncate block">{lastSubmittedInquiry.workEmail}</span>
                     </div>
                     <div>
                       <span className="text-slate-400 block text-[11px]">Topic:</span>
-                      <span className="font-medium text-blue-300">{lastSubmittedLead.exploringTopic}</span>
+                      <span className="font-medium text-blue-300">{lastSubmittedInquiry.exploringTopic}</span>
                     </div>
                   </div>
                 </div>

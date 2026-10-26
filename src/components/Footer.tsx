@@ -1,12 +1,8 @@
 import React from 'react';
-import { ExternalLink, Linkedin, Mail, ShieldAlert, ArrowUp, Database } from 'lucide-react';
+import { ExternalLink, Linkedin, Mail, ShieldAlert, ArrowUp } from 'lucide-react';
 import { DANELLA_PROFILE } from '../data/danellaData';
 
-interface FooterProps {
-  onOpenAdmin: () => void;
-}
-
-export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
+export const Footer: React.FC = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -59,15 +55,6 @@ export const Footer: React.FC<FooterProps> = ({ onOpenAdmin }) => {
               <Mail className="w-3.5 h-3.5 text-blue-400" />
               <span>Email</span>
             </a>
-
-            <button
-              onClick={onOpenAdmin}
-              className="text-slate-400 hover:text-blue-300 transition-colors flex items-center gap-1 cursor-pointer"
-              title="Admin Leads Dashboard"
-            >
-              <Database className="w-3 h-3 text-slate-500" />
-              <span>Admin Leads</span>
-            </button>
 
             <button
               onClick={scrollToTop}
